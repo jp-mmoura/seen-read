@@ -1,0 +1,79 @@
+@import "tailwindcss/preflight";
+@import "tailwindcss/utilities";
+
+html {
+  scroll-behavior: smooth;
+}
+
+header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+h1 {
+  font-size: 2.25rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+h2 {
+  font-size: 1.875rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+p {
+  font-size: 1.125rem;
+  color: rgb(156, 163, 175);
+  text-align: center;
+}
+
+body {
+  background-color: rgb(8, 49, 58);
+  color: rgb(245, 245, 245);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+ul {
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+}
+
+.movies {
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.shorts {
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.shorts::after {
+  content: "*";
+}
+
+.series {
+  text-transform: uppercase;
+}
+
+.books {
+  font-style: italic;
+}
+
+.plays::before,
+.plays::after {
+  content: '"';
+}
+
+.short-stories {
+  font-style: italic;
+}
+
+.short-stories::before,
+.short-stories::after {
+  content: '"';
+}
