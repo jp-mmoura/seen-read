@@ -1,8 +1,9 @@
 import "./globals.css";
+import type { Metadata } from "next";
 
-export const metadata = {
-  title: "Seen / Read by João Pedro Machado Moura",
-  description: "Personal log of films, books, and media in general.",
+export const metadata: Metadata = {
+  title: "Seen / Read — João Pedro Machado Moura",
+  description: "Personal log of films, books, series, plays and more.",
 };
 
 export default function RootLayout({
@@ -12,12 +13,23 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className="max-w-3xl mx-auto px-4 py-8">
-        <header className="mb-8">
-            <h1 className="text-3xl font-bold">Seen / Read</h1>
-            <p className="text-gray-600">João Pedro Machado Moura</p>
-        </header>
+      <body className="max-w-2xl mx-auto px-5 py-10">
+        <div className="masthead">
+          <p className="masthead-eyebrow">✦ personal record of ✦</p>
+          <h1>Seen / Read</h1>
+          <p className="masthead-byline">João Pedro Machado Moura</p>
+          <div className="masthead-rule">
+            <span className="masthead-rule-line" />
+            <span style={{ fontFamily: "var(--font-mono)", fontSize: "0.6rem", letterSpacing: "0.2em", color: "var(--text-mute)" }}>
+              {new Date().getFullYear()}
+            </span>
+            <span className="masthead-rule-line" />
+          </div>
+        </div>
+
         {children}
+
+        <footer className="site-footer">✦ seen · read · watched ✦</footer>
       </body>
     </html>
   );
