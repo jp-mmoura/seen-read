@@ -1,8 +1,6 @@
 "use client";
 
-import { useState, useEffect, useId } from "react";
-
-// ─── TYPES ────────────────────────────────────────────────────────────────────
+import { useState, useEffect, useId, useCallback } from "react";
 
 type MediaType =
   | "movie"
@@ -27,20 +25,6 @@ interface Entry {
   notes?: string;
 }
 
-// ─── INITIAL DATA ─────────────────────────────────────────────────────────────
-// Edit this array to seed your log. All entries are stored in localStorage.
-
-const SEED_ENTRIES: Entry[] = [
-  {
-    id: "seed-1",
-    date: "2026-02-13",
-    type: "movie",
-    title: "Is This Thing On?",
-  },
-];
-
-// ─── CONSTANTS ────────────────────────────────────────────────────────────────
-
 const MEDIA_TYPES: { id: MediaType; label: string }[] = [
   { id: "movie",       label: "Movie"        },
   { id: "short",       label: "Short Film"   },
@@ -55,8 +39,6 @@ const MONTHS = [
   "JAN","FEB","MAR","APR","MAY","JUN",
   "JUL","AUG","SEP","OCT","NOV","DEC",
 ];
-
-// ─── HELPERS ──────────────────────────────────────────────────────────────────
 
 function formatMonthKey(dateStr: string): string {
   const [y, m] = dateStr.split("-");
@@ -122,8 +104,6 @@ function EntryMeta({ entry }: { entry: Entry }) {
   return <span className="entry-meta">{parts.join(" · ")}</span>;
 }
 
-// ─── ADD ENTRY MODAL ──────────────────────────────────────────────────────────
-
 const EMPTY_FORM = {
   date: new Date().toISOString().split("T")[0],
   type: "movie" as MediaType,
@@ -137,12 +117,68 @@ const EMPTY_FORM = {
   notes: "",
 };
 
+/* ── LOGIN FORM ── */
+
+function LoginForm({ onLogin }: { onLogin: () => void }) {
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError("");
+    setLoading(true);
+    try {
+      const res = await fetch("/api/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ password }),
+      });
+      if (res.ok) {
+        onLogin();
+      } else {
+        const data = await res.json();
+        setError(data.error || "Login failed");
+      }
+    } catch {
+      setError("Could not connect to server");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <form onSubmit={handleSubmit} style={{ display: "flex", gap: "0.5rem", alignItems: "flex-end" }}>
+      <label className="form-label" style={{ flex: 1 }}>
+        <span className="form-label-text">Password</span>
+        <input
+          type="password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          placeholder="Enter password"
+          autoFocus
+        />
+      </label>
+      <button type="submit" className="btn btn-primary" disabled={loading || !password}>
+        {loading ? "…" : "Log In"}
+      </button>
+      {error && (
+        <span style={{ fontFamily: "var(--font-mono)", fontSize: "0.7rem", color: "var(--red)" }}>
+          {error}
+        </span>
+      )}
+    </form>
+  );
+}
+
+/* ── ADD ENTRY MODAL ── */
+
 function AddEntryModal({
   onClose,
   onAdd,
 }: {
   onClose: () => void;
-  onAdd: (entry: Entry) => void;
+  onAdd: (entry: Omit<Entry, "id">) => void;
 }) {
   const [form, setForm] = useState(EMPTY_FORM);
   const uid = useId();
@@ -153,7 +189,6 @@ function AddEntryModal({
   const handleSubmit = () => {
     if (!form.title.trim()) return;
     onAdd({
-      id: `${Date.now()}-${Math.random().toString(36).slice(2)}`,
       date: form.date,
       type: form.type,
       title: form.title.trim(),
@@ -168,7 +203,6 @@ function AddEntryModal({
     onClose();
   };
 
-  // Preview text
   const previewEntry: Entry = {
     id: "preview",
     date: form.date,
@@ -362,7 +396,7 @@ function AddEntryModal({
             onClick={handleSubmit}
             disabled={!form.title.trim()}
           >
-            Log Entry ✦
+            Log Entry
           </button>
         </div>
 
@@ -370,8 +404,6 @@ function AddEntryModal({
     </div>
   );
 }
-
-// ─── LEGEND ───────────────────────────────────────────────────────────────────
 
 function Legend() {
   return (
@@ -387,40 +419,84 @@ function Legend() {
   );
 }
 
-// ─── PAGE ─────────────────────────────────────────────────────────────────────
-
-const STORAGE_KEY = "seen-read-entries";
-
 export default function HomePage() {
   const [entries, setEntries] = useState<Entry[]>([]);
   const [hydrated, setHydrated] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [showLegend, setShowLegend] = useState(false);
   const [filterType, setFilterType] = useState<MediaType | "all">("all");
+  const [authed, setAuthed] = useState(false);
+  const [showLogin, setShowLogin] = useState(false);
 
-  // Load from localStorage on mount
-  useEffect(() => {
+  const fetchEntries = useCallback(async () => {
     try {
-      const stored = localStorage.getItem(STORAGE_KEY);
-      if (stored) {
-        setEntries(JSON.parse(stored));
-      } else {
-        setEntries(SEED_ENTRIES);
+      const res = await fetch("/api/entries");
+      if (res.ok) {
+        const data = await res.json();
+        setEntries(data || []);
       }
     } catch {
-      setEntries(SEED_ENTRIES);
+      // silent — entries stay empty
     }
-    setHydrated(true);
   }, []);
 
-  // Persist to localStorage
-  const saveEntries = (updated: Entry[]) => {
-    setEntries(updated);
-    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(updated)); } catch {}
+  const checkAuth = useCallback(async () => {
+    try {
+      const res = await fetch("/api/auth-status");
+      if (res.ok) {
+        const data = await res.json();
+        setAuthed(data.authenticated);
+      }
+    } catch {
+      // silent
+    }
+  }, []);
+
+  useEffect(() => {
+    Promise.all([fetchEntries(), checkAuth()]).then(() => setHydrated(true));
+  }, [fetchEntries, checkAuth]);
+
+  const addEntry = async (entry: Omit<Entry, "id">) => {
+    try {
+      const res = await fetch("/api/entries", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(entry),
+      });
+      if (res.ok) {
+        fetchEntries();
+      }
+    } catch {
+      // silent
+    }
   };
 
-  const addEntry   = (e: Entry) => saveEntries([e, ...entries]);
-  const deleteEntry = (id: string) => saveEntries(entries.filter((e) => e.id !== id));
+  const deleteEntry = async (id: string) => {
+    try {
+      const res = await fetch(`/api/entries/${id}`, { method: "DELETE" });
+      if (res.ok) {
+        fetchEntries();
+      }
+    } catch {
+      // silent
+    }
+  };
+
+  const handleLogout = async () => {
+    try {
+      await fetch("/api/logout", { method: "POST" });
+    } catch {
+      // silent
+    }
+    setAuthed(false);
+    setShowLogin(false);
+  };
+
+  const handleLogin = () => {
+    setAuthed(true);
+    setShowLogin(false);
+    fetchEntries();
+  };
 
   const filtered = filterType === "all"
     ? entries
@@ -435,9 +511,23 @@ export default function HomePage() {
 
       {/* ── TOOLBAR ── */}
       <div className="toolbar">
-        <button className="btn btn-primary" onClick={() => setShowModal(true)}>
-          + Log Entry
-        </button>
+        {authed ? (
+          <>
+            <button className="btn btn-primary" onClick={() => setShowModal(true)}>
+              + Log Entry
+            </button>
+            <button className="btn btn-ghost" onClick={handleLogout}>
+              Log Out
+            </button>
+          </>
+        ) : (
+          <button
+            className="btn btn-primary"
+            onClick={() => setShowLogin((v) => !v)}
+          >
+            {showLogin ? "Cancel" : "Log In"}
+          </button>
+        )}
 
         <button
           className="btn btn-dark"
@@ -451,6 +541,13 @@ export default function HomePage() {
           {filterType !== "all" && ` · ${MEDIA_TYPES.find((t) => t.id === filterType)?.label}`}
         </span>
       </div>
+
+      {/* ── LOGIN FORM ── */}
+      {showLogin && !authed && (
+        <div style={{ marginBottom: "1.25rem" }} className="fade-in">
+          <LoginForm onLogin={handleLogin} />
+        </div>
+      )}
 
       {/* ── LEGEND ── */}
       {showLegend && <Legend />}
@@ -500,13 +597,15 @@ export default function HomePage() {
                         <span className="entry-notes">{entry.notes}</span>
                       )}
                     </div>
-                    <button
-                      className="entry-delete"
-                      onClick={() => deleteEntry(entry.id)}
-                      aria-label={`Remove ${entry.title}`}
-                    >
-                      × remove
-                    </button>
+                    {authed && (
+                      <button
+                        className="entry-delete"
+                        onClick={() => deleteEntry(entry.id)}
+                        aria-label={`Remove ${entry.title}`}
+                      >
+                        × remove
+                      </button>
+                    )}
                   </div>
                 ))}
               </div>

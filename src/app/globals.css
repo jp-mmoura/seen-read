@@ -3,27 +3,25 @@
 @import "tailwindcss/preflight";
 @import "tailwindcss/utilities";
 
-/* ─── TOKENS ─────────────────────────────────────────── */
 :root {
-  --bg:          #0a1a1c;
-  --bg-card:     #0d2226;
-  --bg-input:    #0f272c;
-  --border:      #1e4a52;
-  --border-dim:  #153840;
-  --accent:      #4ecdc4;
-  --accent-dim:  #2a8a82;
-  --accent-glow: rgba(78, 205, 196, 0.12);
-  --text:        #e8f0ef;
-  --text-dim:    #7a9e9b;
-  --text-mute:   #3d6b68;
-  --red:         #e05252;
-  --gold:        #c9a84c;
+  --bg:          #fafafa;
+  --bg-card:     #ffffff;
+  --bg-input:    #ffffff;
+  --border:      #d0d0d0;
+  --border-dim:  #e0e0e0;
+  --accent:      #8b2500;
+  --accent-dim:  #a63a1a;
+  --accent-glow: rgba(139, 37, 0, 0.04);
+  --text:        #1a1a1a;
+  --text-dim:    #6b6b6b;
+  --text-mute:   #a0a0a0;
+  --red:         #c0392b;
+  --gold:        #b8953e;
   --font-serif:  "IM Fell English", Georgia, serif;
   --font-display:"Playfair Display", Georgia, serif;
   --font-mono:   "Courier Prime", "Courier New", monospace;
 }
 
-/* ─── BASE ───────────────────────────────────────────── */
 html { scroll-behavior: smooth; }
 
 body {
@@ -32,11 +30,8 @@ body {
   font-family: var(--font-serif);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  /* subtle noise texture */
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='4' height='4'%3E%3Crect width='4' height='4' fill='%230a1a1c'/%3E%3Ccircle cx='1' cy='1' r='0.6' fill='%23ffffff' opacity='0.015'/%3E%3C/svg%3E");
 }
 
-/* ─── TYPOGRAPHY ─────────────────────────────────────── */
 h1 {
   font-family: var(--font-display);
   font-size: clamp(2.25rem, 7vw, 3.75rem);
@@ -65,14 +60,14 @@ p {
   line-height: 1.7;
 }
 
-/* ─── LAYOUT ─────────────────────────────────────────── */
 ul {
   padding-left: 0;
   padding-right: 0;
   list-style: none;
 }
 
-/* ─── ENTRY CLASSES (your original system, enhanced) ── */
+/* ── MEDIA-TYPE TITLE STYLES ── */
+
 .movies {
   font-weight: 700;
   text-transform: uppercase;
@@ -110,7 +105,7 @@ ul {
 .plays::before,
 .plays::after {
   content: '"';
-  color: var(--accent-dim);
+  color: var(--text-mute);
 }
 
 .short-stories {
@@ -120,7 +115,7 @@ ul {
 .short-stories::before,
 .short-stories::after {
   content: '"';
-  color: var(--accent-dim);
+  color: var(--text-mute);
 }
 
 .sports {
@@ -129,7 +124,8 @@ ul {
   color: var(--text);
 }
 
-/* ─── ENTRY ROW ──────────────────────────────────────── */
+/* ── ENTRY ROW ── */
+
 .entry-row {
   display: grid;
   grid-template-columns: 90px 1fr;
@@ -210,7 +206,8 @@ ul {
   padding: 0;
 }
 
-/* ─── MONTH SECTION ──────────────────────────────────── */
+/* ── MONTH SECTIONS ── */
+
 .month-section {
   margin-bottom: 2rem;
 }
@@ -220,13 +217,14 @@ ul {
   font-size: 0.65rem;
   letter-spacing: 0.2em;
   text-transform: uppercase;
-  color: var(--accent-dim);
+  color: var(--text);
   margin-bottom: 0.5rem;
   padding-bottom: 0.4rem;
-  border-bottom: 1px solid var(--border);
+  border-bottom: 1px solid var(--text);
 }
 
-/* ─── MASTHEAD ────────────────────────────────────────── */
+/* ── MASTHEAD ── */
+
 .masthead {
   text-align: center;
   padding: 2rem 0 2rem;
@@ -264,7 +262,8 @@ ul {
   background: var(--border);
 }
 
-/* ─── LEGEND PILL ────────────────────────────────────── */
+/* ── LEGEND ── */
+
 .legend-grid {
   display: flex;
   flex-wrap: wrap;
@@ -281,7 +280,8 @@ ul {
   color: var(--text-dim);
 }
 
-/* ─── TOOLBAR ────────────────────────────────────────── */
+/* ── TOOLBAR ── */
+
 .toolbar {
   display: flex;
   flex-wrap: wrap;
@@ -298,7 +298,8 @@ ul {
   margin-left: auto;
 }
 
-/* ─── BUTTONS ────────────────────────────────────────── */
+/* ── BUTTONS ── */
+
 .btn {
   font-family: var(--font-mono);
   font-size: 0.72rem;
@@ -311,12 +312,12 @@ ul {
 }
 
 .btn-primary {
-  background: var(--accent);
+  background: var(--text);
   color: var(--bg);
   font-weight: 700;
 }
 .btn-primary:hover {
-  background: #3ab8b0;
+  background: #333;
 }
 .btn-primary:disabled {
   opacity: 0.4;
@@ -329,8 +330,8 @@ ul {
   border: 1px solid var(--border);
 }
 .btn-ghost:hover {
-  border-color: var(--accent-dim);
-  color: var(--accent);
+  border-color: var(--text);
+  color: var(--text);
 }
 
 .btn-dark {
@@ -339,11 +340,12 @@ ul {
   border: 1px solid var(--border-dim);
 }
 .btn-dark:hover {
-  border-color: var(--border);
+  border-color: var(--text);
   color: var(--text);
 }
 
-/* ─── SELECT / INPUT ─────────────────────────────────── */
+/* ── FORM INPUTS ── */
+
 select, input, textarea {
   font-family: var(--font-mono);
   font-size: 0.8rem;
@@ -357,17 +359,18 @@ select, input, textarea {
   appearance: none;
 }
 select:focus, input:focus, textarea:focus {
-  border-color: var(--accent-dim);
+  border-color: var(--text);
 }
 select option {
   background: var(--bg-card);
 }
 
-/* ─── MODAL OVERLAY ──────────────────────────────────── */
+/* ── MODAL ── */
+
 .modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(4, 12, 14, 0.85);
+  background: rgba(0, 0, 0, 0.35);
   z-index: 50;
   display: flex;
   align-items: center;
@@ -383,7 +386,7 @@ select option {
   width: 100%;
   padding: 2rem 1.75rem;
   position: relative;
-  box-shadow: 0 0 60px rgba(78, 205, 196, 0.06);
+  box-shadow: 0 4px 40px rgba(0, 0, 0, 0.08);
 }
 
 .modal-title {
@@ -397,6 +400,8 @@ select option {
   padding-bottom: 0.75rem;
   border-bottom: 1px solid var(--border-dim);
 }
+
+/* ── FORM LAYOUT ── */
 
 .form-grid {
   display: flex;
@@ -424,7 +429,8 @@ select option {
   color: var(--text-mute);
 }
 
-/* ─── ENTRY PREVIEW ──────────────────────────────────── */
+/* ── ENTRY PREVIEW ── */
+
 .entry-preview {
   padding: 0.65rem 0.85rem;
   background: var(--bg);
@@ -443,7 +449,8 @@ select option {
   text-transform: uppercase;
 }
 
-/* ─── STAR RATING ────────────────────────────────────── */
+/* ── STAR BUTTONS ── */
+
 .star-btn {
   background: none;
   border: none;
@@ -455,7 +462,8 @@ select option {
 }
 .star-btn:hover { transform: scale(1.2); }
 
-/* ─── FILTER CHIPS ───────────────────────────────────── */
+/* ── FILTER CHIPS ── */
+
 .filter-chip {
   font-family: var(--font-mono);
   font-size: 0.65rem;
@@ -469,17 +477,18 @@ select option {
   transition: all 0.15s;
 }
 .filter-chip:hover {
-  border-color: var(--accent-dim);
-  color: var(--accent);
+  border-color: var(--text);
+  color: var(--text);
 }
 .filter-chip.active {
-  background: var(--accent);
-  border-color: var(--accent);
+  background: var(--text);
+  border-color: var(--text);
   color: var(--bg);
   font-weight: 700;
 }
 
-/* ─── EMPTY STATE ────────────────────────────────────── */
+/* ── EMPTY STATE ── */
+
 .empty-state {
   text-align: center;
   padding: 4rem 2rem;
@@ -489,7 +498,8 @@ select option {
   border-top: 1px solid var(--border-dim);
 }
 
-/* ─── FOOTER ─────────────────────────────────────────── */
+/* ── FOOTER ── */
+
 .site-footer {
   text-align: center;
   padding: 2rem 0;
@@ -502,7 +512,8 @@ select option {
   text-transform: uppercase;
 }
 
-/* ─── ANIMATIONS ─────────────────────────────────────── */
+/* ── ANIMATION ── */
+
 @keyframes fadeSlideIn {
   from { opacity: 0; transform: translateY(5px); }
   to   { opacity: 1; transform: translateY(0); }

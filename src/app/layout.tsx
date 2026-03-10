@@ -15,7 +15,7 @@ export default function RootLayout({
     <html lang="en">
       <body className="max-w-2xl mx-auto px-5 py-10">
         <div className="masthead">
-          <p className="masthead-eyebrow">✦ personal record of ✦</p>
+          <p className="masthead-eyebrow">— personal record of —</p>
           <h1>Seen / Read</h1>
           <p className="masthead-byline">João Pedro Machado Moura</p>
           <div className="masthead-rule">
@@ -29,7 +29,7 @@ export default function RootLayout({
 
         {children}
 
-        <footer className="site-footer">✦ seen · read · watched ✦</footer>
+        <footer className="site-footer">seen · read · watched</footer>
       </body>
     </html>
   );
